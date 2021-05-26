@@ -2,6 +2,7 @@ from core.models import PublicIdModel, TimeStampedModel
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from users.managers import UserManager
 
 
 class User(AbstractUser, PublicIdModel, TimeStampedModel):
@@ -15,6 +16,7 @@ class User(AbstractUser, PublicIdModel, TimeStampedModel):
         _('username'),
         max_length=150,
         unique=False,
+        blank=True, null=True
     )
 
     email = models.EmailField(
@@ -22,3 +24,15 @@ class User(AbstractUser, PublicIdModel, TimeStampedModel):
         unique=True,
         blank=True
     )
+
+    objects = UserManager()
+
+    def to_dict(self):
+        """Convert instance to json."""
+
+        return {
+            'id': self.public_id,
+            'email': self.email,
+            'is_active': self.is_active,
+            'date_joined': self.date_joined
+        }
